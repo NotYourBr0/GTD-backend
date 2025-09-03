@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: gtd-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        value: https://guess-the-drawing-two.vercel.app
+      - key: MAX_PLAYERS_PER_ROOM
+        value: 8
+      - key: ROUND_TIME_LIMIT
+        value: 60
+      - key: MAX_ROUNDS
+        value: 3
+      - key: DRAWING_THROTTLE_MS
+        value: 16
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
+      - key: LOG_LEVEL
+        value: info
+    healthCheckPath: /health

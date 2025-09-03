@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -16,14 +17,26 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ["https://guess-the-drawing-two.vercel.app/", "http://localhost:5173"],
+    origin: process.env.CORS_ORIGIN ? 
+      process.env.CORS_ORIGIN.split(',').map(origin => origin.trim()) : 
+      ["https://guess-the-drawing-two.vercel.app", "http://localhost:5173"],
     methods: ["GET", "POST"],
     credentials: true
   }
 });
 
+// Configure CORS with environment variables
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN ? 
+    process.env.CORS_ORIGIN.split(',').map(origin => origin.trim()) : 
+    ["https://guess-the-drawing-two.vercel.app", "http://localhost:5173"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // In-memory storage
@@ -195,6 +208,16 @@ io.on('connection', (socket) => {
     }
     
     players.delete(socket.id);
+  });
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 

@@ -1,4 +1,4 @@
-module.exports = (io, socket, gameRooms, players, GameRoom) => {
+module.exports = (io, socket, gameRooms, players) => {
   
   // Join room
   socket.on('joinRoom', (data) => {
@@ -13,10 +13,8 @@ module.exports = (io, socket, gameRooms, players, GameRoom) => {
     
     // Create room if it doesn't exist
     if (!room) {
-      // Import GameRoom class from server.js
-      const { GameRoom } = require('../server');
-      room = new GameRoom(roomId);
-      gameRooms.set(roomId, room);
+      socket.emit('joinError', { message: 'Room does not exist' });
+      return;
     }
     
     // Check if room is full
@@ -146,10 +144,6 @@ module.exports = (io, socket, gameRooms, players, GameRoom) => {
       return;
     }
     
-    const { GameRoom } = require('../server');
-    const room = new GameRoom(roomId);
-    gameRooms.set(roomId, room);
-    
-    socket.emit('roomCreated', { roomId });
+    socket.emit('createRoomError', { message: 'Use API endpoint to create rooms' });
   });
 };
